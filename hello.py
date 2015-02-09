@@ -3,12 +3,29 @@ from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
 from flask.ext.bootstrap import Bootstrap
+import os
+from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.script import Manager
 
 
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'cykuvhibjhvkucjx'
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+        'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 bootstrap = Bootstrap(app)
+db = SQLAlchemy(app)
+manager=Manager(app)
 
+class Post(db.Model):
+    __tablename__ ='posts'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(256), unique=True)
+
+    def __repr__(self):
+        return '<Post %r>' % self.name
 
 class NameForm(Form):
     name = StringField('What is your name? ', validators=[Required()])
@@ -16,7 +33,7 @@ class NameForm(Form):
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    name = None
+    name = Post.query.first()
     form = NameForm()
     if form.validate_on_submit():
         name = form.name.data
@@ -27,6 +44,5 @@ def user(name):
     return render_template('user.html', name=name)
 
 
-
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    manager.run()
