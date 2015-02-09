@@ -3,7 +3,12 @@
 {% block title %}Flasky{% endblock %}
 {% block page_content %}
 <div class="page-header">
-    <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
+    <ul>
+    {% for post in name  %}
+        <li>{{post.name}}</li>
+    {% endfor %}
+    </ul>
+
 </div>
 
 {{ wtf.quick_form(form) }}

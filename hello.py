@@ -33,12 +33,15 @@ class NameForm(Form):
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    name = Post.query.first()
+    names = Post.query.all()
     form = NameForm()
     if form.validate_on_submit():
-        name = form.name.data
+        name_input = form.name.data
         form.name.data = ''
-    return render_template('index.html', form=form, name=name)
+        msg = Post(name=name_input) #Magic
+        db.session.add(msg)
+        db.session.commit()
+    return render_template('index.html', form=form, name=names)
 @app.route('/user/<name>')
 def user(name):
     return render_template('user.html', name=name)
