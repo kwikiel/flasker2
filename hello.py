@@ -34,13 +34,15 @@ class NameForm(Form):
 @app.route('/', methods=['GET','POST'])
 def index():
     names = Post.query.all()
-    form = NameForm()
+    form = NameForm() #This things lives in template?
     if form.validate_on_submit():
         name_input = form.name.data
         form.name.data = ''
         msg = Post(name=name_input) #Magic
         db.session.add(msg)
         db.session.commit()
+    else:
+        return render_template('index.html',form=form, name=names)
     return render_template('index.html', form=form, name=names)
 @app.route('/user/<name>')
 def user(name):
@@ -48,4 +50,4 @@ def user(name):
 
 
 if __name__ == '__main__':
-    manager.run()
+    app.run(debug=True,host="0.0.0.0")
