@@ -6,7 +6,7 @@ from flask.ext.bootstrap import Bootstrap
 import os
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
-
+from flask.ext.migrate import Migrate, MigrateCommand
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -17,12 +17,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app,db)
 manager=Manager(app)
+
+manager.add_command('db',MigrateCommand)
 
 class Post(db.Model):
     __tablename__ ='posts'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
+    post_body = db.Column(db.String(2048), unique=False)
+
 
     def __repr__(self):
         return '<Post %r>' % self.name
@@ -50,4 +55,5 @@ def user(name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0")
+    #app.run(debug=True,host="0.0.0.0") #prod
+    manager.run()
