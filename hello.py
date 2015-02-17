@@ -30,7 +30,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
     post_body = db.Column(db.String(2048), unique=False)
-
+   
 
     def __repr__(self):
         return '<Post %r>' % self.name
@@ -52,6 +52,7 @@ def index():
         msg = Post(name=name_input, post_body=post_msg) #Magic
         db.session.add(msg)
         db.session.commit()
+        flash('Saved to website')
     else:
         return render_template('index.html',form=form, name=names)
     return render_template('index.html', form=form, name=names)

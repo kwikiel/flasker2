@@ -3,6 +3,13 @@
 {% block title %}Flasky{% endblock %}
 {% block page_content %}
 <div class="page-header">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <b>{{ message }}</b>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
     <ul>
     {% for post in name  %}
     <li>{{post.name}} | {{post.post_body}}</li>
