@@ -1,4 +1,4 @@
-from flask import Flask, render_template, session, redirect, url_for, flash
+from flask import Flask, render_template, session, redirect, url_for, flash, jsonify
 from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField
 from wtforms.validators import Required
@@ -30,7 +30,6 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(256), unique=True)
     post_body = db.Column(db.String(2048), unique=False)
-   
 
     def __repr__(self):
         return '<Post %r>' % self.name
@@ -42,6 +41,7 @@ class NameForm(Form):
 
 @app.route('/', methods=['GET','POST'])
 def index():
+    #Post.query.delete()
     names = Post.query.all()
     form = NameForm() #This things lives in template?
     if form.validate_on_submit():
@@ -60,6 +60,17 @@ def index():
 def user(name):
     return render_template('user.html', name=name)
 
+@app.route('/api/add_name/<name>')
+def api_add(name):
+    temp_data = Post(name=name, post_body='Added from api')
+    db.session.add(temp_data)
+    db.session.commit()
+    return 'Added'
+
+@app.route('/api/read/')
+def read_api():
+    sauce = Post.query.all()
+    return jsonify.dumps(sauce)
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0") #prod
