@@ -8,7 +8,10 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.script import Manager
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask_debugtoolbar import DebugToolbarExtension
+from flask.ext.jsontools import jsonapi
+from sqlalchemy.ext.declarative import declarative_base
 
+Base = declarative_base()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
@@ -33,6 +36,7 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post %r>' % self.name
+
 
 class NameForm(Form):
     name = StringField('What is your name? ', validators=[Required()])
@@ -67,10 +71,10 @@ def api_add(name):
     db.session.commit()
     return 'Added'
 
-@app.route('/api/read/')
-def read_api():
+@app.route('/api/read/<id>')
+def read_api(id):
     sauce = Post.query.all()
-    return jsonify.dumps(sauce)
+    return str(sauce[int(id)].name)
 
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0") #prod
