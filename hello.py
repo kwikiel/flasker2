@@ -57,8 +57,7 @@ def index():
         db.session.add(msg)
         db.session.commit()
         flash('Saved to website')
-    else:
-        return render_template('index.html',form=form, name=names)
+        return redirect(url_for('index'))
     return render_template('index.html', form=form, name=names)
 @app.route('/user/<name>')
 def user(name):
