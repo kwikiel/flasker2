@@ -75,6 +75,15 @@ def read_api(id):
     sauce = Post.query.all()
     return str(sauce[int(id)].name)
 
+@app.route('/api/read/json')
+def read_api_json():
+    all_data = Post.query.all()
+    return render_template('data.json', posts = all_data )
+
+@app.route('/charts')
+def charts():
+    data = [('Sunday', 480), ('Monday', 27), ('Tuesday', 32), ('Wednesday', 42),('Thursday', 38), ('Friday', 45), ('Saturday', 52)]
+    return render_template('template.html', data=data)
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0") #prod
     #manager.run()
