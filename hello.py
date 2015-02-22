@@ -10,12 +10,16 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from flask_debugtoolbar import DebugToolbarExtension
 from flask.ext.jsontools import jsonapi
 from sqlalchemy.ext.declarative import declarative_base
+import chartkick
+
+
 
 Base = declarative_base()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app = Flask(__name__)
+app = Flask(__name__, static_folder=chartkick.js(), static_url_path='/static')
 app.config['SECRET_KEY'] = 'cykuvhibjhvkucjx'
+app.jinja_env.add_extension("chartkick.ext.charts")
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
@@ -26,7 +30,6 @@ migrate = Migrate(app,db)
 manager=Manager(app)
 manager.add_command('db',MigrateCommand)
 toolbar=DebugToolbarExtension(app)
-
 
 class Post(db.Model):
     __tablename__ ='posts'
@@ -84,6 +87,26 @@ def read_api_json():
 def charts():
     data = [('Sunday', 480), ('Monday', 27), ('Tuesday', 32), ('Wednesday', 42),('Thursday', 38), ('Friday', 45), ('Saturday', 52)]
     return render_template('template.html', data=data)
+
+@app.route('/charts2')
+def charts2():
+    return render_template('charts.html')
+
+@app.route('/chartkick')
+def kickchart():
+    data = {'Chrome': 52.9, 'Opera': 1.6, 'Firefox': 27.7}
+    return render_template('charts3.html', data=data)
+
+@app.route('/charts4')
+def charts4(chartID = 'chart_ID', chart_type = 'bar', chart_height = 350):
+    chart = {"renderTo": chartID, "type": chart_type, "height": chart_height,}
+    series = [{"name": 'Label1', "data": [1,2,3]}, {"name": 'Label2', "data": [4, 5, 6]}]
+    title = {"text": 'My Title'}
+    xAxis = {"categories": ['xAxis Data1', 'xAxis Data2', 'xAxis Data3']}
+    yAxis = {"title": {"text": 'yAxis Label'}}
+    return render_template('charts4.html', chartID=chartID, chart=chart, series=series, title=title, xAxis=xAxis, yAxis=yAxis)
+
+
 if __name__ == '__main__':
     app.run(debug=True,host="0.0.0.0") #prod
     #manager.run()
