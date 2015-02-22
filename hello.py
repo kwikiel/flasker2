@@ -1,6 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for, flash, jsonify
 from flask.ext.wtf import Form
-from wtforms import StringField, SubmitField
+from wtforms import StringField, SubmitField, IntegerField
 from wtforms.validators import Required
 from flask.ext.bootstrap import Bootstrap
 import os
@@ -41,10 +41,36 @@ class Post(db.Model):
         return '<Post %r>' % self.name
 
 
+class Measure(db.Model):
+    __tablename__ = 'measures'
+    id = db.Column(db.Integer, primary_key=True)
+    value = db.Column(db.Integer)
+
+    def __repr__(self):
+        return '%r' % self.value
+
+class WeirdForm(Form):
+    measure =IntegerField('Reasult from measurment? ', validators=[Required()])
+    submit = SubmitField('Submit')
+
+
 class NameForm(Form):
     name = StringField('What is your name? ', validators=[Required()])
     post_name = StringField('What is your favourite color?', validators=[Required()])
     submit = SubmitField('Submit')
+
+
+@app.route('/measure', methods=['GET','POST'])
+def measure():
+    form = WeirdForm()
+    if form.validate_on_submit():
+        current_value = form.measure.data
+        current = Measure(value=current_value)
+        form.measure.data = ''
+        db.session.add(current)
+        db.session.commit()
+        return redirect(url_for('measure'))
+    return render_template('data_input.html', form=form)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -85,7 +111,7 @@ def read_api_json():
 
 @app.route('/charts')
 def charts():
-    data = [('Sunday', 480), ('Monday', 27), ('Tuesday', 32), ('Wednesday', 42),('Thursday', 38), ('Friday', 45), ('Saturday', 52)]
+    data = [('Sunday', 10), ('Monday', 27), ('Tuesday', 32), ('Wednesday', 42),('Thursday', 38), ('Friday', 45), ('Saturday', 52), ('Potato', 33)]
     return render_template('template.html', data=data)
 
 @app.route('/charts2')
@@ -108,5 +134,5 @@ def charts4(chartID = 'chart_ID', chart_type = 'bar', chart_height = 350):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0") #prod
-    #manager.run()
+    #app.run(debug=True,host="0.0.0.0") #prod
+    manager.run()
