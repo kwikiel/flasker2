@@ -63,6 +63,7 @@ class NameForm(Form):
 @app.route('/measure', methods=['GET','POST'])
 def measure():
     form = WeirdForm()
+    wholedata = Measure.query.all()
     if form.validate_on_submit():
         current_value = form.measure.data
         current = Measure(value=current_value)
@@ -70,7 +71,7 @@ def measure():
         db.session.add(current)
         db.session.commit()
         return redirect(url_for('measure'))
-    return render_template('data_input.html', form=form)
+    return render_template('data_input.html', form=form, msu=wholedata)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -112,7 +113,8 @@ def read_api_json():
 @app.route('/charts')
 def charts():
     data = [('Sunday', 10), ('Monday', 27), ('Tuesday', 32), ('Wednesday', 42),('Thursday', 38), ('Friday', 45), ('Saturday', 52), ('Potato', 33)]
-    return render_template('template.html', data=data)
+    data2 = Measure.query.all()
+    return render_template('template.html', data=data2)
 
 @app.route('/charts2')
 def charts2():
@@ -134,5 +136,5 @@ def charts4(chartID = 'chart_ID', chart_type = 'bar', chart_height = 350):
 
 
 if __name__ == '__main__':
-    #app.run(debug=True,host="0.0.0.0") #prod
-    manager.run()
+    app.run(debug=True,host="0.0.0.0") #prod
+    #manager.run()

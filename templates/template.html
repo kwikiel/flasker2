@@ -15,16 +15,16 @@
 
         // Create our data table.
         var data = new google.visualization.DataTable();
-        data.addColumn('string', 'Day');
-        data.addColumn('number', 'Number of frobnications');
+        data.addColumn('string', 'X Axis');
+        data.addColumn('number', 'Y Values');
         data.addRows([
                 // Instead of plugging in the values manually, or reading them
                 // from a Data Source like Google Spreadsheets, feed them in
                 // using Jinja, the templating system Flask uses.
                 // Each iteration evaluates to something like this:
                 // ['Saturday', 28],
-                {%- for dayname, num in data %}
-                ['{{ dayname }}', {{ num }}],
+                {%- for data_point in data %}
+                ['{{ data_point.id }}', {{ data_point.value }}],
                 {%- endfor %}
         ]);
 
@@ -34,8 +34,8 @@
         // Google Charts API is well-documented.
         var chart = new google.visualization.ColumnChart(
                 document.getElementById('chart_div'));
-        chart.draw(data, {legend: 'none', vAxis: {baseline: 0},
-                colors: ['#A0D100']});
+        chart.draw(data,{legend: 'none', vAxis: {baseline: 0},
+                colors: ['#000080']});
       }
     </script>
 
@@ -61,7 +61,7 @@
 <body>
     <!-- Include more content here or below the chart, using Flask / Jinja. -->
     <div id="content">
-        <h1>Foobars frobnicated in the past 7 days</h1>
+        <h1>This is chart. I know</h1>
         <div id="chart_div"></div>
     </div>
 </body>
