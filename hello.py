@@ -70,7 +70,7 @@ def measure():
         form.measure.data = ''
         db.session.add(current)
         db.session.commit()
-        return redirect(url_for('measure'))
+        return redirect(url_for('charts'))
     return render_template('data_input.html', form=form, msu=wholedata)
 
 @app.route('/', methods=['GET','POST'])
