@@ -1,0 +1,8 @@
+{
+{% for post in posts %}
+"id": {{post.id}},
+"name": "{{post.name}}",
+"post_body": "{{post.body}}",
+
+{% endfor %}
+}
